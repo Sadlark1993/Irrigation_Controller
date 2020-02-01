@@ -69,9 +69,9 @@ class Controlador:
         self.update_output()
 
 #-------------------------Back end------------------------
-    """abaixo temos a função update_output, que ficará responsável pelo estado das saídas (vermelho ou preto), para calcular qual deve ser
-        o estado, o codigo calcula quanto falta para chegar, a partir de agora, no horário de início e no horario de fim do tompo t,
-        se faltar mais tempo pra chegar no horario de inicio, a saída será ligada (vermelho)"""
+    """abaixo temos a função update_output, que ficará responsável pelo estado das saídas (vermelho ou preto), para calcular
+        qual deve ser o estado, o codigo calcula quanto falta para chegar, a partir de agora, no horário de início e no horario
+        de fim do tempo t, se faltar mais tempo pra chegar no horario de inicio, a saída será ligada (vermelho)"""
     def update_output(self):
         if self.numSol>0:
             self.current_time = time(datetime.now().hour, datetime.now().minute)
