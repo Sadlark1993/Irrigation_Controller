@@ -69,9 +69,9 @@ class Controlador:
         self.update_output()
 
 #-------------------------Back end------------------------
-    """abaixo temos a função update_output, que ficará responsável pelo estado das saídas (vermelho ou preto), para calcular
-        qual deve ser o estado, o codigo calcula quanto falta para chegar, a partir de agora, no horário de início e no horario
-        de fim do tempo t, se faltar mais tempo pra chegar no horario de inicio, a saída será ligada (vermelho)"""
+    """abaixo temos o método update_output, que ficará responsável pelo estado das saídas (vermelho ou preto), para calcular qual deve ser
+        o estado, o codigo calcula quanto falta para chegar, a partir de agora, no horário de início e no horario de fim do tompo t,
+        se faltar mais tempo pra chegar no horario de inicio, a saída será ligada (vermelho)"""
     def update_output(self):
         if self.numSol>0:
             self.current_time = time(datetime.now().hour, datetime.now().minute)
@@ -186,7 +186,7 @@ class Controlador:
                     if dif_t3_i_m > dif_t3_f_m:
                         ligaLed = 1
 
-                if ligaLed == 1:
+                if ligaLed == 1:                #ligar led
                     self.solenoidesArea.delete(led)
                     self.solenoidesArea.create_oval(config, fill='red', tag = led)
                 else:
@@ -216,16 +216,26 @@ class Controlador:
 
         
 
-    def save_sol(self):
+    def save_sol(self):                                     #Saves the solenoid's data in the vector to be analyzed
         print("saved: "+ str(self.solenoide["t1"][0]))
+        aux = {"t1": [time(0,0,0), time(0,0,0)],
+                "t2": [time(0,0,0), time(0,0,0)],
+                "t3": [time(0,0,0), time(0,0,0)]}
+        aux["t1"][0] = self.solenoide["t1"][0]
+        aux["t1"][1] = self.solenoide["t1"][1]
+        aux["t2"][0] = self.solenoide["t2"][0]
+        aux["t2"][1] = self.solenoide["t2"][1]
+        aux["t3"][0] = self.solenoide["t3"][0]
+        aux["t3"][1] = self.solenoide["t3"][1]
         if self.numSol == 0:
-             self.vetsole = [self.solenoide]                    # <----PROBLEMA!!! Ele está atribuindo ao vetor o ponteiro do dicionário, não os valores do mesmo.
-             self.numSol =+1
+            self.vetsole = []
+            self.vetsole.append(dict(aux))                   
+            self.numSol =+1
         elif self.currentNumSol > len(self.vetsole):
-            self.vetsole = self.vetsole + [self.solenoide]
+            self.vetsole.append(dict(aux))
             self.numSol += 1
         else:
-            self.vetsole[self.currentNumSol-1] = self.solenoide
+            self.vetsole[self.currentNumSol-1] = dict(aux)
         self.rightButton['command'] = self.next_sol
         self.leftButton['command'] = self.previous_sol
         self.centerButton['command'] = self.select_sol
@@ -237,7 +247,7 @@ class Controlador:
         self.currentRow = self.currentColumn = 0
         self.show_sol()
         
-
+                                                                    #The next four methods its used to navegate through the datas to select what data will be updated
     def one_row_above(self):
         if self.currentRow > 0:
             self.currentRow = self.currentRow-1
@@ -276,213 +286,79 @@ class Controlador:
 
     def plus(self):
         print('plus')
+        row = self.currentRow
 
-        if self.currentRow ==0:
-            if self.currentColumn == 0:
-                h = self.solenoide["t1"][0].hour
-                m = self.solenoide["t1"][0].minute
-                h = h+1
-                if h>23:
-                    h = h-24
-                self.solenoide["t1"][0] = time(h, m)
+        if self.currentColumn == 0:
+            h = self.solenoide['t'+str(row+1)][0].hour
+            m = self.solenoide['t'+str(row+1)][0].minute
+            h = h+1
+            if h>23:
+                h = h-24
+            self.solenoide['t'+str(row+1)][0] = time(h, m)
 
-            elif self.currentColumn ==1:
-                h = self.solenoide["t1"][0].hour
-                m = self.solenoide["t1"][0].minute
-                m = m+1
-                if m>59:
-                    m = m-60
-                self.solenoide["t1"][0] = time(h, m)
+        elif self.currentColumn ==1:
+            h = self.solenoide['t'+str(row+1)][0].hour
+            m = self.solenoide['t'+str(row+1)][0].minute
+            m = m+1
+            if m>59:
+                m = m-60
+            self.solenoide['t'+str(row+1)][0] = time(h, m)
 
-            elif self.currentColumn == 2:
-                h = self.solenoide["t1"][1].hour
-                m = self.solenoide["t1"][1].minute
-                h = h+1
-                if h>23:
-                    h = h-24
-                self.solenoide["t1"][1] = time(h, m)
+        elif self.currentColumn == 2:
+            h = self.solenoide['t'+str(row+1)][1].hour
+            m = self.solenoide['t'+str(row+1)][1].minute
+            h = h+1
+            if h>23:
+                h = h-24
+            self.solenoide['t'+str(row+1)][1] = time(h, m)
 
-            elif self.currentColumn == 3:
-                h = self.solenoide["t1"][1].hour
-                m = self.solenoide["t1"][1].minute
-                m = m+1
-                if m>59:
-                    m = m-60
-                self.solenoide["t1"][1] = time(h, m)
-
-        elif self.currentRow == 1:
-            if self.currentColumn == 0:
-                h = self.solenoide["t2"][0].hour
-                m = self.solenoide["t2"][0].minute
-                h = h+1
-                if h>23:
-                    h = h-24
-                self.solenoide["t2"][0] = time(h, m)
-
-            elif self.currentColumn == 1:
-                h = self.solenoide["t2"][0].hour
-                m = self.solenoide["t2"][0].minute
-                m = m+1
-                if m>59:
-                    m = m-60
-                self.solenoide["t2"][0] = time(h, m)
-                
-            elif self.currentColumn == 2:
-                h = self.solenoide["t2"][1].hour
-                m = self.solenoide["t2"][1].minute
-                h = h+1
-                if h>23:
-                    h = h-24
-                self.solenoide["t2"][1] = time(h, m)
-            
-            elif self.currentColumn == 3:
-                h = self.solenoide["t2"][1].hour
-                m = self.solenoide["t2"][1].minute
-                m = m+1
-                if m>59:
-                    m = m-60
-                self.solenoide["t2"][1] = time(h, m)
-            
-        elif self.currentRow == 2:
-            if self.currentColumn == 0:
-                h = self.solenoide["t3"][0].hour
-                m = self.solenoide["t3"][0].minute
-                h = h+1
-                if h>23:
-                    h = h-24
-                self.solenoide["t3"][0] = time(h, m)
-
-            elif self.currentColumn == 1:
-                h = self.solenoide["t3"][0].hour
-                m = self.solenoide["t3"][0].minute
-                m = m+1
-                if m>59:
-                    m = m-60
-                self.solenoide["t3"][0] = time(h, m)
-                
-            elif self.currentColumn == 2:
-                h = self.solenoide["t3"][1].hour
-                m = self.solenoide["t3"][1].minute
-                h = h+1
-                if h>23:
-                    h = h-24
-                self.solenoide["t3"][1] = time(h, m)
-            
-            elif self.currentColumn == 3:
-                h = self.solenoide["t3"][1].hour
-                m = self.solenoide["t3"][1].minute
-                m = m+1
-                if m>59:
-                    m = m-60
-                self.solenoide["t3"][1] = time(h, m)
+        elif self.currentColumn == 3:
+            h = self.solenoide['t'+str(row+1)][1].hour
+            m = self.solenoide['t'+str(row+1)][1].minute
+            m = m+1
+            if m>59:
+                m = m-60
+            self.solenoide['t'+str(row+1)][1] = time(h, m)
         
         self.show_sol()
 
     def minus(self):
         print('minus')
 
-        if self.currentRow==0:
-            if self.currentColumn==0:
-                h = self.solenoide["t1"][0].hour
-                m = self.solenoide["t1"][0].minute
-                h -= 1
-                if h<0:
-                    h += 24
-                
-                self.solenoide["t1"][0] = time(h, m)
+        row = self.currentRow
+        if self.currentColumn==0:
+            h = self.solenoide['t'+str(row+1)][0].hour
+            m = self.solenoide['t'+str(row+1)][0].minute
+            h -= 1
+            if h<0:
+                h += 24
             
-            elif self.currentColumn==1:
-                h = self.solenoide["t1"][0].hour
-                m = self.solenoide["t1"][0].minute
-                m -= 1
-                if m<0:
-                    m += 60
-                self.solenoide["t1"][0] = time(h, m)
+            self.solenoide['t'+str(row+1)][0] = time(h, m)
+        
+        elif self.currentColumn==1:
+            h = self.solenoide['t'+str(row+1)][0].hour
+            m = self.solenoide['t'+str(row+1)][0].minute
+            m -= 1
+            if m<0:
+                m += 60
+            self.solenoide['t'+str(row+1)][0] = time(h, m)
 
-            elif self.currentColumn==2:
-                h = self.solenoide["t1"][1].hour
-                m = self.solenoide["t1"][1].minute
-                h-=1
-                if h<0:
-                    h+=24
-                self.solenoide["t1"][1] = time(h, m)
+        elif self.currentColumn==2:
+            h = self.solenoide['t'+str(row+1)][1].hour
+            m = self.solenoide['t'+str(row+1)][1].minute
+            h-=1
+            if h<0:
+                h+=24
+            self.solenoide['t'+str(row+1)][1] = time(h, m)
 
-            elif self.currentColumn==3:
-                h = self.solenoide["t1"][1].hour
-                m = self.solenoide["t1"][1].minute
-                m-=1
-                if m<0:
-                    m+=60
-                self.solenoide["t1"][1] = time(h, m)
+        elif self.currentColumn==3:
+            h = self.solenoide['t'+str(row+1)][1].hour
+            m = self.solenoide['t'+str(row+1)][1].minute
+            m-=1
+            if m<0:
+                m+=60
+            self.solenoide['t'+str(row+1)][1] = time(h, m)
 
-        elif self.currentRow==1:
-            if self.currentColumn==0:
-                h = self.solenoide["t2"][0].hour
-                m = self.solenoide["t2"][0].minute
-                h -= 1
-                if h<0:
-                    h += 24
-                
-                self.solenoide["t2"][0] = time(h, m)
-            
-            elif self.currentColumn==1:
-                h = self.solenoide["t2"][0].hour
-                m = self.solenoide["t2"][0].minute
-                m -= 1
-                if m<0:
-                    m += 60
-                self.solenoide["t2"][0] = time(h, m)
-
-            elif self.currentColumn==2:
-                h = self.solenoide["t2"][1].hour
-                m = self.solenoide["t2"][1].minute
-                h-=1
-                if h<0:
-                    h+=24
-                self.solenoide["t2"][1] = time(h, m)
-
-            elif self.currentColumn==3:
-                h = self.solenoide["t2"][1].hour
-                m = self.solenoide["t2"][1].minute
-                m-=1
-                if m<0:
-                    m+=60
-                self.solenoide["t2"][1] = time(h, m)
-
-        elif self.currentRow==2:
-            if self.currentColumn==0:
-                h = self.solenoide["t3"][0].hour
-                m = self.solenoide["t3"][0].minute
-                h -= 1
-                if h<0:
-                    h += 24
-                
-                self.solenoide["t3"][0] = time(h, m)
-            
-            elif self.currentColumn==1:
-                h = self.solenoide["t3"][0].hour
-                m = self.solenoide["t3"][0].minute
-                m -= 1
-                if m<0:
-                    m += 60
-                self.solenoide["t3"][0] = time(h, m)
-
-            elif self.currentColumn==2:
-                h = self.solenoide["t3"][1].hour
-                m = self.solenoide["t3"][1].minute
-                h-=1
-                if h<0:
-                    h+=24
-                self.solenoide["t3"][1] = time(h, m)
-
-            elif self.currentColumn==3:
-                h = self.solenoide["t3"][1].hour
-                m = self.solenoide["t3"][1].minute
-                m-=1
-                if m<0:
-                    m+=60
-                self.solenoide["t3"][1] = time(h, m)
-                
         
         self.show_sol()
     
