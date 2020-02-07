@@ -7,6 +7,7 @@ class Controlador:
         #------------(GUI)-----------------
         control.resizable(width = False, height = False)
         control.title('Controlador de Irrigação')
+        control.iconbitmap(self, default = 'IconeIFMT.ico')
         self.frame1 = Frame(control)
         self.frame1.pack()
         self.lcd = Label(self.frame1, text='', width = 16, height = 4, bg = 'black',
